@@ -15,7 +15,7 @@ Components::Components(QWidget *parent)
   listView = new QListView();
   mainLayout.addWidget(label);
   mainLayout.addWidget(listView);
-  ComponentsModel *listModel = new ComponentsModel(this);
+  listModel = new ComponentsModel(this);
   listModel->setStringList(settingsComponents.split(" "));
   listView->setModel(listModel);
 
@@ -23,5 +23,16 @@ Components::Components(QWidget *parent)
   listView->setItemDelegate(delegate);
 
   setLayout(&mainLayout);
+}
+
+#include <QDebug>
+void Components::update(QJsonArray arr)
+{
+  qInfo() << arr;
+  QStringList list;
+  for (QJsonValue value: arr)
+    list.append(value.toString());
+
+  listModel->update(list);
 }
 

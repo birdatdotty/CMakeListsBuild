@@ -40,6 +40,17 @@ void Config::setPrjPath(const QString& str)
   updatePrjPath(prjPath);
 }
 
+#include <QDebug>
+void Config::setMainPrjPath(const QString& str)
+{
+  qInfo() << __LINE__ << "void Config::setMainPrjPath(" << str  << ")";
+  mainPrjPath = str;
+
+  update();
+  qInfo() << "config:" << config;
+  updateMainPrjPath(mainPrjPath);
+}
+
 void Config::setPrjName(const QString& str)
 {
   prjName = str;
@@ -74,6 +85,11 @@ void Config::setPrjMode(const QString mode)
   prjMode = mode;
 }
 
+void Config::setPkgList(const QStringList newPkgList)
+{
+  pkgList = newPkgList;
+}
+
 void Config::browsePrjPath()
 {
   QString dir = QFileDialog::getExistingDirectory(nullptr, tr("Open Directory"),
@@ -83,6 +99,22 @@ void Config::browsePrjPath()
 
   if (dir.size() > 0)
     setPrjPath(dir);
+}
+
+void Config::browseMainPrjPath()
+{
+  QString dir = QFileDialog::getExistingDirectory(nullptr, tr("Open Directory"),
+                                                  "",
+                                                  QFileDialog::ShowDirsOnly
+                                                  | QFileDialog::DontResolveSymlinks);
+
+  if (dir.size() > 0)
+    setMainPrjPath(dir);
+}
+
+QString Config::getMainPrjPath() const
+{
+  return mainPrjPath;
 }
 
 QStringList Config::getSourceList() const

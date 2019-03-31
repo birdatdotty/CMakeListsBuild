@@ -3,22 +3,26 @@
 
 #include <QWidget>
 #include <QGridLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPushButton>
 
 #include "Config.h"
 
 
-//class CMakeListsBuild;
-#include "CMakeListsBuild/CMakeListsBuild.h"
-//class Components;
-#include "Components/Components.h"
-//class ComponentsFiles;
-#include "ComponentsFiles/ComponentsFiles.h"
+class CMakeListsBuild;
+class Components;
+class ComponentsFiles;
 class ProBuild;
-#include "CheckMode/CheckMode.h"
+class CheckMode;
 class SubPrj;
 class ExtendedLib;
+class TreePrj;
+
+class ConfigureCMake;
+class NamePrj;
 
 class Widget : public QWidget
 {
@@ -32,17 +36,17 @@ signals:
 public slots:
 
 private:
+
   QGridLayout mainLayout;
-  CMakeListsBuild *cMakeListsBuild;
-  ProBuild *proBuild;
-  Components *componentsWdget;
-  ComponentsFiles *componentsFiles;
+  NamePrj* namePrj;
+  TreePrj* treePrj;
   SubPrj *subPrj;
   CheckMode *checkMode;
   ExtendedLib *extendedLib;
   QLabel *lPrjPath, *lNamePrj;
   QLineEdit *ePrjPath, *eNamePrj;
   QPushButton *btnPrjPath;
+  ConfigureCMake* configureCMake;
 
   Config *config;
 };

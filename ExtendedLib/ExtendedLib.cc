@@ -1,58 +1,43 @@
 #include "ExtendedLib.h"
 
+#include <QStringListModel>
 #include <QFileDialog>
+#include <QAction>
+
 #include "Config.h"
 
-ExtendedLib::ExtendedLib(QWidget *parent) : QWidget(parent)
+
+ExtendedLib::ExtendedLib(QWidget* parent)
+  : QWidget(parent)
 {
-  addInclude = new QPushButton(tr("add include..."));
-  addLib = new QPushButton(tr("add lib..."));
+  label = new QLabel("Библиотеки(pkgconfig):");
+  listView = new QListView();
+  addFile = new QPushButton("Добавить библиотеку (*.pc)");
+  listModel = new QStringListModel();
+  listView->setModel(listModel);
+  mainLayout.addWidget(label);
+  mainLayout.addWidget(listView);
+  mainLayout.addWidget(addFile);
 
-  mainLayout.addWidget(addLib);
-  mainLayout.addWidget(addInclude);
-
-  connect(addLib, &QPushButton::released, this, &ExtendedLib::slotAddLib);
+  connect(addFile, &QPushButton::released, this, &ExtendedLib::slotAddFile);
 
   setLayout(&mainLayout);
 }
 
-void ExtendedLib::slotAddLib()
+#include <QDebug>
+void ExtendedLib::slotAddFile()
 {
   QString dir = config->getPrjPath();
   QStringList sourceList;
   QStringList headerList;
-  QStringList files = QFileDialog::getOpenFileNames(this, tr("Open lib..."),
-                                                    dir,
-                                                    tr("lib for project (*.so *.dll *.a *.lib)"));
+  QStringList files = QFileDialog::getOpenFileNames(this, tr("Open File"),
+                                                  "/usr/lib64/pkgconfig/",
+                                                  tr("pkgconfig (*.pc)"));
 
-  if (files.size() == 0)
-    return;
+  for (QString lib: files)
+    pkgList.insert(lib);
+  listModel->setStringList(pkgList.toList());
 
-  QStringList fileList;
-
-//  foreach (QString fileItr, files)
-//    {
-//      QString file = fileItr.split(dir)[1];
-//      while (file.startsWith("/"))
-//        file = file.split("/")[1];
-
-//      fileList.append(file);
-//      if (file.endsWith(".cc") || file.endsWith(".cpp"))
-//        {
-//          sourceList.append(file);
-//        }
-
-//      if (file.endsWith(".h") )
-//        headerList.append(file);
-//    }
-//  config->setSourceList(sourceList);
-//  config->setHeaderList(headerList);
-
-//  listModel->setStringList(fileList);
-
-}
-
-void ExtendedLib::slotAddInclude()
-{
-
+//  qInfo() << pkgList + files;
+  listModel->setStringList(pkgList.toList());
 }

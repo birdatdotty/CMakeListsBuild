@@ -28,12 +28,14 @@ SOURCES += \
         main.cc \
         MainWindow.cc \
         Widget.cc \
-        Config.cc
+        Config.cc \
+    ConfigureCMake.cc
 
 HEADERS += \
         MainWindow.h \
         Widget.h \
-        Config.h
+        Config.h \
+    ConfigureCMake.h
 
 include(CMakeListsBuild/CMakeListsBuild.pri)
 include(ProBuild/ProBuild.pri)
@@ -42,6 +44,9 @@ include(ComponentsFiles/ComponentsFiles.pri)
 include(CheckMode/CheckMode.pri)
 include(SubPrj/SubPrj.pri)
 include(ExtendedLib/ExtendedLib.pri)
+include(PrjPath/PrjPath.pri)
+include(TreePrj/TreePrj.pri)
+include(NamePrj/NamePrj.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

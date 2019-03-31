@@ -17,6 +17,9 @@ class ComponentsModel: public QStringListModel
     QVariant data(const QModelIndex &index, int role) const;
     void getComponents();
 
+  public slots:
+    void update(QStringList components);
+
   private:
       QSet<QPersistentModelIndex> checkedItems;
 };

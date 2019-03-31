@@ -7,13 +7,17 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QStringListModel>
+#include <QJsonArray>
 
 class ComponentsFiles : public QWidget
 {
   Q_OBJECT
   public:
     explicit ComponentsFiles(QWidget *parent = nullptr);
-  
+
+  public slots:
+    void update(QJsonArray sources, QJsonArray headers);
+
   private:
     QVBoxLayout mainLayout;
     QListView* listView;
@@ -23,6 +27,7 @@ class ComponentsFiles : public QWidget
 
   private slots:
     void slotAddFile();
+    void slotSetFiles(QStringList fileList);
 };
 
 #endif // FILES_H

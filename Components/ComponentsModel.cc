@@ -68,3 +68,17 @@ void ComponentsModel::getComponents()
   config->setComponents(list);
 }
 
+#include <QDebug>
+void ComponentsModel::update(QStringList components)
+{
+  QStringList listComponents = stringList();
+  for (int i = 0; i < listComponents.size(); i++)
+    {
+      QString component = listComponents[i];
+      if (components.contains(component))
+        checkedItems.insert(index(i));
+      else
+        checkedItems.remove(index(i));
+    }
+}
+

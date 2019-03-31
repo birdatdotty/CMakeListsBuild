@@ -18,6 +18,20 @@ SubPrj::SubPrj(QWidget *parent) : QWidget(parent)
   setLayout(&mainLayout);
 }
 
+#include <QDebug>
+void SubPrj::update(QJsonArray arr)
+{
+  qInfo() << "void SubPrj::update(QJsonArray)";
+  subPrjList.clear();
+  for(QJsonValue value: arr)
+    subPrjList.append(value.toString());
+
+  qInfo() << __LINE__ << arr;
+  qInfo() << __LINE__ << subPrjList;
+  config->setSubPrjs(subPrjList);
+  listModel->setStringList(subPrjList);
+}
+
 void SubPrj::slotAddPrj()
 {
   QString curDir = config->getPrjPath();

@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QStringListModel>
 #include <QPushButton>
+#include <QJsonArray>
 
 #include "Config.h"
 
@@ -19,6 +20,8 @@ class SubPrj : public QWidget
   signals:
 
   public slots:
+    void update(QJsonArray);
+
   private:
     QVBoxLayout mainLayout;
     QListView* listView;

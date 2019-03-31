@@ -21,6 +21,7 @@ public:
   QSettings *setting;
 
 public slots:
+  void setMainPrjPath(const QString& str);
   void setPrjPath(const QString& str);
   void setPrjName(const QString& str);
   void setComponents(const QStringList newComponents);
@@ -28,8 +29,11 @@ public slots:
   void setHeaderList(const QStringList newHeaderList);
   void setSubPrjs(const QStringList newSubPrjs);
   void setPrjMode(const QString mode);
+  void setPkgList(const QStringList newPkgList);
   void browsePrjPath();
+  void browseMainPrjPath();
 
+  QString getMainPrjPath() const;
   QString getPrjPath() const;
   QString getPrjName() const;
   QString getPrjMode() const;
@@ -45,8 +49,10 @@ public:
 signals:
   void update();
   void updatePrjPath(QString);
+  void updateMainPrjPath(QString);
 
 private:
+  QString mainPrjPath;
   QString prjMode;
   QString prjPath;
   QString prjName;
@@ -54,6 +60,7 @@ private:
   QStringList headerList;
   QStringList sourceList;
   QStringList subPrjs;
+  QStringList pkgList;
 };
 
 #endif // CONFIG_H

@@ -6,7 +6,11 @@
 #include <QListView>
 #include <QLabel>
 
+#include <QJsonArray>
+
 #include "Config.h"
+
+class ComponentsModel;
 
 
 class Components : public QWidget
@@ -18,10 +22,13 @@ class Components : public QWidget
   signals:
 
   public slots:
+    void update(QJsonArray);
+
   private:
     QVBoxLayout mainLayout;
     QListView* listView;
     QLabel* label;
+    ComponentsModel *listModel;
 };
 
 #endif // COMPONENTS_H
