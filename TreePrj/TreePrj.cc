@@ -5,14 +5,13 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
-
-#include <QDebug>
+#include <QMessageBox>
 
 #include "Config.h"
 
 void TreePrj::openByPath(QString path, TreeItem* parent)
 {
-  QJsonObject json = openInit(path + "/init.json");
+  QJsonObject json = config->openInit(path + "/init.json");
   QVariant data = QVariant::fromValue(json);
   TreeItem *treeItem = new TreeItem(json["name"].toString() ,data);
   parent->appendChild(treeItem);
@@ -22,10 +21,6 @@ void TreePrj::openByPath(QString path, TreeItem* parent)
 
 void TreePrj::initNewTreeItem(QString mainPath)
 {
-  QJsonObject main = openInit(mainPath + "init.json");
-
-  QVariant v1 = QVariant::fromValue(main);
-
   TreeItem *root = new TreeItem("/", "root");
   openByPath(mainPath, root);
 
@@ -49,15 +44,24 @@ TreePrj::TreePrj(ConfigureCMake *configureCMake, QWidget *parent) : QWidget(pare
   setLayout(&mainLayout);
 }
 
-QJsonObject TreePrj::openInit(QString file)
-{
-  QJsonObject jsonObject;
-  QFile fd(file);
-  if (!fd.open(QIODevice::ReadOnly | QIODevice::Text))
-    return jsonObject;
+//QJsonObject TreePrj::openInit(QString file)
+//{
+//  QJsonObject jsonObject, blankJsonObject;
+//  QFile fd(file);
+//  if (!fd.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//      QStringList fileSplit = file.split("/");
+//      jsonObject["name"] = fileSplit[fileSplit.size()-2];
 
-  const QByteArray json = fd.readAll();
-  jsonObject = QJsonDocument::fromJson(json).object();
+//      QString ctx = QJsonDocument(jsonObject).toJson();
+//      if (!config->writeFile(file, ctx))
+//        return blankJsonObject;
+//      else
+//        return jsonObject;
+//    }
 
-  return jsonObject;
-}
+//  const QByteArray json = fd.readAll();
+//  jsonObject = QJsonDocument::fromJson(json).object();
+
+//  return jsonObject;
+//}

@@ -3,12 +3,11 @@
 #include "Widget.h"
 Config* config;
 
-MainWindow::MainWindow(QWidget *parent)
-  : QMainWindow(parent)
+MainWindow::MainWindow(QString str)
 {
 //  cMakeListsBuild = new CMakeListsBuild();
   config = new Config;
-  widget = new Widget(config);
+  widget = new Widget(config, str, this);
   setCentralWidget(widget);
 }
 

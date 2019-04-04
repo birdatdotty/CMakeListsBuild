@@ -6,6 +6,8 @@
 #include <QList>
 #include <QMap>
 #include <QSettings>
+#include <QModelIndex>
+#include <QJsonObject>
 
 class Config;
 extern Config* config;
@@ -34,6 +36,7 @@ public slots:
   void browseMainPrjPath();
 
   QString getMainPrjPath() const;
+  QString getMainPrjPath1() const;
   QString getPrjPath() const;
   QString getPrjName() const;
   QString getPrjMode() const;
@@ -41,6 +44,9 @@ public slots:
   QStringList getSourceList() const;
   QStringList getHeaderList() const;
   QStringList getSubPrjs() const;
+  void setCurIndex(const QModelIndex &index);
+  QModelIndex getCurIndex();
+  QJsonObject openInit(QString file);
 
 
 public:
@@ -61,6 +67,8 @@ private:
   QStringList sourceList;
   QStringList subPrjs;
   QStringList pkgList;
+
+  QModelIndex index;
 };
 
 #endif // CONFIG_H

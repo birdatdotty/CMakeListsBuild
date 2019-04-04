@@ -24,11 +24,8 @@ ComponentsFiles::ComponentsFiles(QWidget* parent)
   setLayout(&mainLayout);
 }
 
-#include <QDebug>
 void ComponentsFiles::update(QJsonArray sources, QJsonArray headers)
 {
-  qInfo() << "sources:" << sources.at(2);
-  qInfo() << "headers:" << headers;
   QStringList files;
   for (int i = 0; i < sources.size(); i++)
     {
@@ -39,13 +36,13 @@ void ComponentsFiles::update(QJsonArray sources, QJsonArray headers)
   for (QJsonValue value: headers)
     files.append(value.toString());
 
-  qInfo() << files;
   slotSetFiles(files);
 }
-
+#include <QDebug>
 void ComponentsFiles::slotAddFile()
 {
-  QString dir = config->getPrjPath();
+  QString dir = config->getMainPrjPath1() + config->getPrjPath();
+  qInfo() << "dir:" << dir;
   QStringList files = QFileDialog::getOpenFileNames(this, tr("Open File"),
                                                   dir,
                                                   tr("files for project (*.cc *.cpp *.h)"));
@@ -78,6 +75,30 @@ void ComponentsFiles::slotSetFiles(QStringList files)
     }
   config->setSourceList(sourceList);
   config->setHeaderList(headerList);
+
+  QModelIndex index = config->getCurIndex();
+  QVariant data = index.data();
+  if (data.canConvert<QJsonObject>())
+    {
+      QJsonObject json = qvariant_cast<QJsonObject>(data);
+      QJsonArray jsonSources, jsonHeaders;
+      for (QString source: sourceList)
+        jsonSources.append(source);
+      for (QString header: headerList)
+        jsonHeaders.append(header);
+
+      json["headers"] = jsonHeaders;
+      json["sources"] = jsonSources;
+      qInfo() << __LINE__ << json;
+
+  ////////////////////////////////////////////////////////////////
+      const QAbstractItemModel* constModel = index.model();
+      QAbstractItemModel* model = const_cast<QAbstractItemModel*>(constModel);
+      QVariant variantJson = qVariantFromValue(json);
+      model->setData(index, variantJson);
+    }
+  qInfo() << __LINE__ << config->getCurIndex().data();
+
 
   listModel->setStringList(fileList);
 

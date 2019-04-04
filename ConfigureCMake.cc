@@ -30,7 +30,7 @@ ConfigureCMake::ConfigureCMake(Config *config, QWidget *parent)
 
   proBuild = new ProBuild(this);
 
-  ExtendedLib *extendedLib = new ExtendedLib();
+  extendedLib = new ExtendedLib();
 
   mainLayout.addWidget(lPrjPath,0,0);
   mainLayout.addWidget(ePrjPath, 0, 1, 1, 2);
@@ -50,23 +50,21 @@ ConfigureCMake::ConfigureCMake(Config *config, QWidget *parent)
 
   connect(ePrjPath, &QLineEdit::textChanged, config, &Config::setPrjPath);
   connect(eNamePrj, &QLineEdit::textChanged, config, &Config::setPrjName);
-//  connect(btnPrjPath, &QPushButton::released, config, &Config::browsePrjPath);
-//  connect(config, &Config::updatePrjPath, ePrjPath, &QLineEdit::setText);
-
-//  config->setPrjPath("");
 
   setLayout(&mainLayout);
 }
 
-#include <QDebug>
 void ConfigureCMake::update(QString path, QJsonObject obj)
 {
-  qInfo() << obj;
+  if (curPath == path)
+    return;
+
+  curPath = path;
   ePrjPath->setText(path);
   eNamePrj->setText(obj["name"].toString());
-  componentsWdget->update( obj["Qt"].toArray() );
+  componentsWdget->update(obj["Qt"].toArray());
   componentsFiles->update(obj["sources"].toArray(),
                           obj["headers"].toArray());
   subPrj->update(obj["dirs"].toArray());
-
+  extendedLib->update(obj["pkgs"].toArray());
 }

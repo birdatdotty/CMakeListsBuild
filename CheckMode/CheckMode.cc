@@ -1,8 +1,6 @@
 #include "CheckMode.h"
 #include "Config.h"
 
-#include <QDebug>
-
 CheckMode::CheckMode(QWidget *parent) : QWidget(parent)
 {
   mode = App;

@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QStringListModel>
+#include <QJsonArray>
 #include <QSet>
 
 class ExtendedLib : public QWidget
@@ -25,6 +26,9 @@ class ExtendedLib : public QWidget
 
   private slots:
     void slotAddFile();
+
+  public:
+    void update(QJsonArray pkgs);
 };
 
 #endif // EXTENDEDLIB_H

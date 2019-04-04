@@ -25,10 +25,8 @@ Components::Components(QWidget *parent)
   setLayout(&mainLayout);
 }
 
-#include <QDebug>
 void Components::update(QJsonArray arr)
 {
-  qInfo() << arr;
   QStringList list;
   for (QJsonValue value: arr)
     list.append(value.toString());

@@ -27,7 +27,7 @@ class TreePrj : public QWidget
     TreeModel *model;
     Delegate *delegate;
 
-    QJsonObject openInit(QString file);
+//    QJsonObject openInit(QString file);
     void openByPath(QString path, TreeItem* parent = nullptr);
 
   private slots:

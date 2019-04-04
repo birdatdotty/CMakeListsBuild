@@ -21,6 +21,7 @@ class TreeModel : public QAbstractItemModel
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
   public slots:
     void update(TreeItem* newRoot);
@@ -28,6 +29,7 @@ class TreeModel : public QAbstractItemModel
   private:
     TreeItem *rootItem;
     ConfigureCMake *configureCMake;
+    void openByPath(QString path, TreeItem* parent);
 };
 
 #endif // TREEMODEL_H

@@ -43,6 +43,7 @@ class ConfigureCMake : public QWidget
     QLabel *lPrjPath, *lNamePrj;
     QLineEdit *ePrjPath, *eNamePrj;
     QPushButton *btnPrjPath;
+    QString curPath;
 
     Config *config;
 

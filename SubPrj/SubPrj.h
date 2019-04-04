@@ -8,6 +8,7 @@
 #include <QStringListModel>
 #include <QPushButton>
 #include <QJsonArray>
+#include <QSet>
 
 #include "Config.h"
 
@@ -28,8 +29,8 @@ class SubPrj : public QWidget
     QStringListModel* listModel;
     QLabel* label;
     QPushButton *addPrj;
-    QStringList subPrjList,
-                externSubPrjList;
+    QSet<QString> subPrjList,
+                  externSubPrjList;
 
   private slots:
     void slotAddPrj();

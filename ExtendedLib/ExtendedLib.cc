@@ -6,7 +6,7 @@
 
 #include "Config.h"
 
-
+#include <QDebug>
 ExtendedLib::ExtendedLib(QWidget* parent)
   : QWidget(parent)
 {
@@ -14,6 +14,7 @@ ExtendedLib::ExtendedLib(QWidget* parent)
   listView = new QListView();
   addFile = new QPushButton("Добавить библиотеку (*.pc)");
   listModel = new QStringListModel();
+  qInfo() << __LINE__ << "listModel:" << listModel;
   listView->setModel(listModel);
   mainLayout.addWidget(label);
   mainLayout.addWidget(listView);
@@ -24,7 +25,6 @@ ExtendedLib::ExtendedLib(QWidget* parent)
   setLayout(&mainLayout);
 }
 
-#include <QDebug>
 void ExtendedLib::slotAddFile()
 {
   QString dir = config->getPrjPath();
@@ -40,4 +40,15 @@ void ExtendedLib::slotAddFile()
 
 //  qInfo() << pkgList + files;
   listModel->setStringList(pkgList.toList());
+}
+
+#include <QDebug>
+void ExtendedLib::update(QJsonArray pkgs)
+{
+  QStringList pkgList;
+  for (QJsonValue value: pkgs)
+    pkgList.append(value.toString());
+
+  listModel->setStringList(pkgList);
+
 }

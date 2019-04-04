@@ -2,6 +2,8 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "Config.h"
 
@@ -40,14 +42,11 @@ void Config::setPrjPath(const QString& str)
   updatePrjPath(prjPath);
 }
 
-#include <QDebug>
 void Config::setMainPrjPath(const QString& str)
 {
-  qInfo() << __LINE__ << "void Config::setMainPrjPath(" << str  << ")";
   mainPrjPath = str;
 
   update();
-  qInfo() << "config:" << config;
   updateMainPrjPath(mainPrjPath);
 }
 
@@ -117,6 +116,19 @@ QString Config::getMainPrjPath() const
   return mainPrjPath;
 }
 
+QString Config::getMainPrjPath1() const
+{
+
+  bool endSep = (mainPrjPath.endsWith("/"));
+
+  QStringList splitMainPath = mainPrjPath.split("/");
+  splitMainPath.removeLast();
+  if (endSep)
+    splitMainPath.removeLast();
+
+  return splitMainPath.join("/");
+}
+
 QStringList Config::getSourceList() const
 {
   return sourceList;
@@ -131,12 +143,43 @@ QStringList Config::getSubPrjs() const
 {
   return subPrjs;
 }
-#include <QDebug>
+
+void Config::setCurIndex(const QModelIndex &newIndex)
+{
+  index = newIndex;
+}
+
+QModelIndex Config::getCurIndex()
+{
+  return index;
+}
+
+QJsonObject Config::openInit(QString file)
+{
+  QJsonObject jsonObject, blankJsonObject;
+  QFile fd(file);
+  if (!fd.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      QStringList fileSplit = file.split("/");
+      jsonObject["name"] = fileSplit[fileSplit.size()-2];
+
+      QString ctx = QJsonDocument(jsonObject).toJson();
+      if (!config->writeFile(file, ctx))
+        return blankJsonObject;
+      else
+        return jsonObject;
+    }
+
+  const QByteArray json = fd.readAll();
+  jsonObject = QJsonDocument::fromJson(json).object();
+
+  return jsonObject;
+
+}
+
 bool Config::writeFile(QString file, QString data)
 {
-  qInfo() << file << ":" << data;
   QFile fd(file);
-//  QFile fd("/tmp/1.txt");
   if (fd.open(QIODevice::WriteOnly))
     {
       QTextStream out(&fd);

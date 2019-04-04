@@ -13,38 +13,12 @@
 #include "ConfigureCMake.h"
 
 
-Widget::Widget(Config *config, QWidget *parent)
+Widget::Widget(Config *config, QString path, QWidget *parent)
   : QWidget(parent),
     config (config)
 {
-  config->setPrjPath("");
-
-
-
-
-//  QJsonObject obj;
-//  obj["name"] = "qwe";
-//  QJsonArray sources;
-//  sources.append("main.cc");
-//  sources.append("main1.cc");
-//  sources.append("main2.cc");
-//  sources.append("main3.cc");
-//  obj["sources"] = sources;
-//  QJsonArray headers;
-//  headers.append("main.h");
-//  headers.append("main.h");
-//  headers.append("main.h");
-//  obj["headers"] = headers;
-//  QJsonArray dirs;
-//  dirs.append("Widget");
-//  obj["dirs"] = dirs;
-//  QJsonArray qt;
-//  qt.append("Widgets");
-//  qt.append("Core");
-//  obj["Qt"] = qt;
 
   configureCMake = new ConfigureCMake(config, this);
-//  configureCMake->update("/", obj);
   namePrj = new NamePrj(config, this);
 
 
@@ -53,6 +27,9 @@ Widget::Widget(Config *config, QWidget *parent)
   mainLayout.addWidget(namePrj, 0, 0, 1, 2);
   mainLayout.addWidget(treePrj, 1, 0);
   mainLayout.addWidget(configureCMake, 1, 1);
+
+  if (path.size()>0)
+    config->setMainPrjPath(path);
 
   setLayout(&mainLayout);
 }

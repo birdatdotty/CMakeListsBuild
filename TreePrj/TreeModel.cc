@@ -3,6 +3,20 @@
 
 #include "../ConfigureCMake.h"
 
+#include <QDebug>
+
+void TreeModel::openByPath(QString path, TreeItem* parent)
+{
+  qInfo() << __LINE__ << "path:" << path;
+  QJsonObject json = config->openInit(path + "/init.json");
+  QVariant data = QVariant::fromValue(json);
+  TreeItem *treeItem = new TreeItem(json["name"].toString() ,data);
+  parent->appendChild(treeItem);
+  for (QJsonValue value: json["dirs"].toArray())
+    openByPath(path+"/"+value.toString(), treeItem);
+}
+
+
 TreeModel::TreeModel(ConfigureCMake *configureCMake)
   : configureCMake(configureCMake)
 {
@@ -27,6 +41,46 @@ int TreeModel::columnCount(const QModelIndex &parent) const
         return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
     else
       return rootItem->columnCount();
+}
+
+#include <QDebug>
+bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+  TreeItem *item;
+  QJsonObject obj = qvariant_cast<QJsonObject>(value);
+
+
+  item = static_cast<TreeItem*>(index.internalPointer());
+  QJsonObject oldJsonObject, newJsonObject;
+  oldJsonObject = qvariant_cast<QJsonObject>(item->data(0));
+  newJsonObject = qvariant_cast<QJsonObject>(value);
+  QJsonArray oldQsonArray = oldJsonObject["dirs"].toArray(),
+             newQsonArray = newJsonObject["dirs"].toArray();
+  QStringList newDirs, oldDirs, uniqDirs;
+  for (QJsonValue oldValue: oldQsonArray)
+    oldDirs.append(oldValue.toString());
+
+//  for (QJsonValue newValue: newQsonArray)
+//    newDirs.append(newValue.toString());
+  for (QJsonValue newValue: newQsonArray)
+    if (!oldDirs.contains(newValue.toString()))
+      uniqDirs.append(newValue.toString());
+
+  qInfo() << "uniqDirs:" << uniqDirs;
+
+  int childCount = item->childCount();
+  qInfo() << "childCount:" << childCount;
+  item->update(value);
+  beginInsertRows(index, childCount, childCount+uniqDirs.size() - 1);
+  for (QString dir: uniqDirs)
+    openByPath(config->getMainPrjPath1() + item->getPath() + "/" + dir, item);
+  endInsertRows();
+  qInfo() << "write init.json" << qvariant_cast<QJsonObject>(value);
+//  config
+
+  qInfo() << item->data(0);
+
+  return true;
 }
 
 void TreeModel::update(TreeItem *newRoot)

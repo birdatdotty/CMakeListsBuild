@@ -68,7 +68,6 @@ void ComponentsModel::getComponents()
   config->setComponents(list);
 }
 
-#include <QDebug>
 void ComponentsModel::update(QStringList components)
 {
   QStringList listComponents = stringList();

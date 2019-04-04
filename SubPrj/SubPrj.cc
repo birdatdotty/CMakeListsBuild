@@ -1,6 +1,8 @@
 #include "SubPrj.h"
+#include "../TreePrj/TreeItem.h"
 
 #include <QFileDialog>
+#include <QJsonObject>
 
 SubPrj::SubPrj(QWidget *parent) : QWidget(parent)
 {
@@ -18,42 +20,67 @@ SubPrj::SubPrj(QWidget *parent) : QWidget(parent)
   setLayout(&mainLayout);
 }
 
-#include <QDebug>
 void SubPrj::update(QJsonArray arr)
 {
-  qInfo() << "void SubPrj::update(QJsonArray)";
   subPrjList.clear();
   for(QJsonValue value: arr)
-    subPrjList.append(value.toString());
+    subPrjList.insert(value.toString());
 
-  qInfo() << __LINE__ << arr;
-  qInfo() << __LINE__ << subPrjList;
-  config->setSubPrjs(subPrjList);
-  listModel->setStringList(subPrjList);
+  config->setSubPrjs(subPrjList.toList());
+  listModel->setStringList(subPrjList.toList());
 }
 
+#include <QDebug>
 void SubPrj::slotAddPrj()
 {
-  QString curDir = config->getPrjPath();
-  QStringList sourceList;
-  QStringList headerList;
-  QString prjDir =
-      QFileDialog::getExistingDirectory(this, tr("Open project dir"), curDir);
-
-  if (prjDir.size() == 0)
+  QString mainDir = config->getMainPrjPath();
+  QStringList prjDirList = config->getPrjPath().split("/");
+  if (prjDirList.size() < 2)
     return;
 
-  if (prjDir.startsWith(curDir))
-    {
-      prjDir = prjDir.split(curDir)[1];
-      while(prjDir.startsWith("/"))
-        prjDir = prjDir.mid(1);
-    }
-  else externSubPrjList.append(prjDir);
+  prjDirList.pop_front();
+  prjDirList.pop_front();
+  QString prjDir = prjDirList.join("/");
+  QString curDir = mainDir + "/" + prjDir;
+  QStringList sourceList;
+  QStringList headerList;
+  QString prjPath =
+      QFileDialog::getExistingDirectory(this,
+                                        tr("Open project dir"),
+                                        curDir);
 
-  QStringList allList = subPrjList + externSubPrjList;
-  subPrjList.append(prjDir);
+  if (prjPath.size() == 0)
+    return;
+
+  if (prjPath.startsWith(mainDir))
+    {
+      prjPath = prjPath.split(curDir)[1];
+      while(prjPath.startsWith("/"))
+        prjPath = prjPath.mid(1);
+      subPrjList.insert(prjPath);
+    }
+  else externSubPrjList.insert(prjPath);
+
+  QStringList allList;
+  for (auto prj: subPrjList)
+    allList.append(prj);
+
+  for (auto prj: externSubPrjList)
+    allList.append(prj);
+
   config->setSubPrjs(allList);
   listModel->setStringList(allList);
+  QJsonArray jsonSubPrjList;
+  for (QString str: subPrjList)
+    jsonSubPrjList.append(str);
 
+  QModelIndex index = config->getCurIndex();
+  QJsonObject json = qvariant_cast<QJsonObject>(index.data());
+  json["dirs"] = jsonSubPrjList;
+  QVariant variantJson = qVariantFromValue(json);
+
+  const QAbstractItemModel* constModel = index.model();
+  QAbstractItemModel* model = const_cast<QAbstractItemModel*>(constModel);
+qInfo() << "index:" << index;
+  model->setData(index, variantJson);
 }

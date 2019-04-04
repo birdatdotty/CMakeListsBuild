@@ -20,13 +20,15 @@ class TreeItem
     QVariant data(int role) const;
     int row() const;
     TreeItem *parentItem();
+    void update(const QVariant &newData);
+    QString getPath() const;
 
   private:
     QList<TreeItem*> m_childItems;
     QVariant m_itemData;
     TreeItem *m_parentItem;
     QString path;
-    QString getPath() const;
+
 };
 
 #endif // TREEITEM_H

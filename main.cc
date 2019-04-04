@@ -1,15 +1,14 @@
 #include "MainWindow.h"
-//#include "Updates.h"
 #include <QApplication>
-
-//Updates* updates;
-
 
 int main(int argc, char *argv[])
 {
+  QString defaultPath;
+  if (argc > 1)
+    defaultPath = argv[1];
+
   QApplication a(argc, argv);
-//  updates = new Updates;
-  MainWindow w;
+  MainWindow w(defaultPath);
   w.show();
 
   return a.exec();

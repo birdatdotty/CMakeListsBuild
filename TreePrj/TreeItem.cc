@@ -1,4 +1,8 @@
 #include "TreeItem.h"
+#include "Config.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+
 
 TreeItem::TreeItem(const QString path,
                    const QVariant &data,
@@ -36,7 +40,6 @@ int TreeItem::columnCount() const
   return 1;
 }
 
-#include <QDebug>
 QVariant TreeItem::data(int role) const
 {
   if (role == Qt::UserRole)
@@ -51,6 +54,17 @@ QVariant TreeItem::data(int role) const
 TreeItem *TreeItem::parentItem()
 {
   return m_parentItem;
+}
+
+#include <QDebug>
+void TreeItem::update(const QVariant &newData)
+{
+  m_itemData = newData;
+  QString initFile = config->getMainPrjPath1() + getPath() + "/init.json";
+  QJsonObject jsonObj = qvariant_cast<QJsonObject>(newData);
+  QJsonDocument doc(jsonObj);
+  QString strJson(doc.toJson(QJsonDocument::Compact));
+  config->writeFile(initFile, strJson);
 }
 
 QString TreeItem::getPath() const
