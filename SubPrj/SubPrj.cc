@@ -81,6 +81,5 @@ void SubPrj::slotAddPrj()
 
   const QAbstractItemModel* constModel = index.model();
   QAbstractItemModel* model = const_cast<QAbstractItemModel*>(constModel);
-qInfo() << "index:" << index;
   model->setData(index, variantJson);
 }

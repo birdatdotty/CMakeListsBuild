@@ -66,5 +66,5 @@ void ConfigureCMake::update(QString path, QJsonObject obj)
   componentsFiles->update(obj["sources"].toArray(),
                           obj["headers"].toArray());
   subPrj->update(obj["dirs"].toArray());
-  extendedLib->update(obj["pkgs"].toArray());
+  extendedLib->update(obj["pc"].toArray());
 }
