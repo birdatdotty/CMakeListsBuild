@@ -29,7 +29,7 @@ QString CMakeListsBuild::buildCtxApp(QJsonObject json)
   qInfo() << __LINE__ << json;
   QJsonArray pc = json["pc"].toArray();
   QString project = config->getPrjName();
-  QString header = "cmake_minimum_required(VERSION 3.1)\n"
+  QString header = "cmake_minimum_required(VERSION 3.12)\n"
                    "project(%1 LANGUAGES CXX)\n"
                    "set(CMAKE_INCLUDE_CURRENT_DIR ON)\n"
                    "set(CMAKE_AUTOMOC ON)\n"
@@ -45,26 +45,6 @@ QString CMakeListsBuild::buildCtxApp(QJsonObject json)
                    "target_link_libraries(%4)\n"
                    "install(TARGETS ${PROJECT_NAME} DESTINATION bin)\n";
 
-  // pkgconfig
-  QString prePackages;
-  QString packageLibaries;
-  if (pc.size()>0)
-    {
-      prePackages = "FIND_PACKAGE(PkgConfig REQUIRED)\n";
-      for (QJsonValue value: pc)
-        {
-          QString pkg = value.toString();
-          QString name = pkg.split("/").last();
-          name = name.remove(QRegExp("\\W")).toUpper();
-          prePackages += "PKG_CHECK_MODULES(" + name + " REQUIRED " + pkg + ")\n";
-          prePackages += "INCLUDE_DIRECTORIES(${" + name + "_INCLUDE_DIRS})\n";
-          prePackages += "ADD_DEFINITIONS(${" + name + "_CFLAGS_OTHER})\n\n";
-          packageLibaries += " ${" + name + "} ";
-        }
-    }
-  qInfo() << "prePackages:" << prePackages;
-  qInfo() << "packageLibaries:" << packageLibaries;
-//  "FIND_PACKAGE(PkgConfig REQUIRED)"
   // end pkgconfig
   files = config->getSourceList();
   QString subPrjStr;
@@ -81,7 +61,26 @@ QString CMakeListsBuild::buildCtxApp(QJsonObject json)
       packages = "find_package(Qt5 COMPONENTS " + components.join(" ") + " REQUIRED)\n";
       library = "${PROJECT_NAME} PRIVATE Qt5::" + components.join(" Qt5::") + " " + subPrjs.join(" ");
     }
-  QString ctx = header.arg(project, packages, filesStr, library, subPrjStr);
+  // pkgconfig
+  QString prePackages;
+  QString packageLibaries;
+  if (pc.size()>0)
+    {
+      prePackages = "FIND_PACKAGE(PkgConfig REQUIRED)\n";
+      for (QJsonValue value: pc)
+        {
+          QString pkg = value.toString();
+          QString name = pkg.split("/").last();
+          name = name.remove(QRegExp("\\W")).toUpper();
+          prePackages += "PKG_CHECK_MODULES(" + name + " REQUIRED " + pkg + ")\n";
+          prePackages += "INCLUDE_DIRECTORIES(${" + name + "_INCLUDE_DIRS})\n";
+          prePackages += "ADD_DEFINITIONS(${" + name + "_CFLAGS_OTHER})\n\n";
+          packageLibaries += " ${" + name + "} ";
+          library += " ${" + name + "_LIBRARIES} ";
+        }
+    }
+
+  QString ctx = header.arg(project, prePackages + packages, filesStr, library, subPrjStr);
 
   return ctx;
 }
