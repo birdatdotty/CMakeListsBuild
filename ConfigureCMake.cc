@@ -67,4 +67,5 @@ void ConfigureCMake::update(QString path, QJsonObject obj)
                           obj["headers"].toArray());
   subPrj->update(obj["dirs"].toArray());
   extendedLib->update(obj["pc"].toArray());
+  checkMode->updateMode(obj["mode"].toString("StaticLib"));
 }

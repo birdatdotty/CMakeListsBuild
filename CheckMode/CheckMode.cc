@@ -30,17 +30,60 @@ CheckMode::CheckMode(QWidget *parent) : QWidget(parent)
 void CheckMode::selectRadioApp()
 {
   mode = App;
+  udpateJson();
   config->setPrjMode("App");
 }
 
 void CheckMode::selectRadioStaticLib()
 {
   mode = StaticLib;
+  udpateJson();
   config->setPrjMode("StaticLib");
 }
 
 void CheckMode::selectRadioDinamicLib()
 {
   mode = DinamicLib;
+  udpateJson();
   config->setPrjMode("DinamicLib");
+}
+
+void CheckMode::udpateJson()
+{
+  QModelIndex index = config->getCurIndex();
+  QJsonObject json = qvariant_cast<QJsonObject>(index.data());
+  if (mode == App)
+    json["mode"] = "App";
+  else if (mode == StaticLib)
+    json["mode"] = "StaticLib";
+  else if (mode == DinamicLib)
+    json["mode"] = "DinamicLib";
+  QVariant variantJson = qVariantFromValue(json);
+
+  const QAbstractItemModel* constModel = index.model();
+  QAbstractItemModel* model = const_cast<QAbstractItemModel*>(constModel);
+  model->setData(index, variantJson);
+}
+
+void CheckMode::updateMode(QString mode)
+{
+  if (mode == "App")
+    {
+      mode = App;
+      radioApp->setChecked(true);
+      return;
+    }
+  if (mode == "StaticLib")
+    {
+      mode = StaticLib;
+      radioStaticLib->setChecked(true);
+      return;
+    }
+  if (mode == "DinamicLib")
+    {
+      mode = DinamicLib;
+      radioDinamicLib->setChecked(true);
+      return;
+    }
+
 }

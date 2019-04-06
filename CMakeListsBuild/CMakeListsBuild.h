@@ -28,9 +28,9 @@ private:
   QStringList files;
 
   // App, StaticLib, DinamicLib
-  QString buildCtxApp();
-  QString buildCtxStaticLib();
-  QString buildCtxDinamicLib();
+  QString buildCtxApp(QJsonObject json);
+  QString buildCtxStaticLib(QJsonObject json);
+  QString buildCtxDinamicLib(QJsonObject json);
 
 private slots:
   void update();

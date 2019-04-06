@@ -32,6 +32,10 @@ class CheckMode : public QWidget
     void selectRadioApp();
     void selectRadioStaticLib();
     void selectRadioDinamicLib();
+    void udpateJson();
+
+  public slots:
+    void updateMode(QString mode);
 };
 
 #endif // CHECKMODE_H

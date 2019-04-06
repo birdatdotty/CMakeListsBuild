@@ -2,6 +2,8 @@
 #include "Config.h"
 
 #include <QFile>
+#include <QJsonObject>
+#include <QJsonArray>
 
 
 CMakeListsBuild::CMakeListsBuild(QWidget *parent)
@@ -21,9 +23,11 @@ CMakeListsBuild::~CMakeListsBuild()
 {
   delete label;
 }
-
-QString CMakeListsBuild::buildCtxApp()
+#include <QDebug>
+QString CMakeListsBuild::buildCtxApp(QJsonObject json)
 {
+  qInfo() << __LINE__ << json;
+  QJsonArray pc = json["pc"].toArray();
   QString project = config->getPrjName();
   QString header = "cmake_minimum_required(VERSION 3.1)\n"
                    "project(%1 LANGUAGES CXX)\n"
@@ -39,8 +43,29 @@ QString CMakeListsBuild::buildCtxApp()
                    "\n"
                    "target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)\n"
                    "target_link_libraries(%4)\n"
-                    "install(TARGETS ${PROJECT_NAME} DESTINATION bin)\n";
+                   "install(TARGETS ${PROJECT_NAME} DESTINATION bin)\n";
 
+  // pkgconfig
+  QString prePackages;
+  QString packageLibaries;
+  if (pc.size()>0)
+    {
+      prePackages = "FIND_PACKAGE(PkgConfig REQUIRED)\n";
+      for (QJsonValue value: pc)
+        {
+          QString pkg = value.toString();
+          QString name = pkg.split("/").last();
+          name = name.remove(QRegExp("\\W")).toUpper();
+          prePackages += "PKG_CHECK_MODULES(" + name + " REQUIRED " + pkg + ")\n";
+          prePackages += "INCLUDE_DIRECTORIES(${" + name + "_INCLUDE_DIRS})\n";
+          prePackages += "ADD_DEFINITIONS(${" + name + "_CFLAGS_OTHER})\n\n";
+          packageLibaries += " ${" + name + "} ";
+        }
+    }
+  qInfo() << "prePackages:" << prePackages;
+  qInfo() << "packageLibaries:" << packageLibaries;
+//  "FIND_PACKAGE(PkgConfig REQUIRED)"
+  // end pkgconfig
   files = config->getSourceList();
   QString subPrjStr;
   QStringList components = config->getComponents();
@@ -61,7 +86,7 @@ QString CMakeListsBuild::buildCtxApp()
   return ctx;
 }
 
-QString CMakeListsBuild::buildCtxStaticLib()
+QString CMakeListsBuild::buildCtxStaticLib(QJsonObject json)
 {
   QString project = config->getPrjName();
   QString header = "cmake_minimum_required(VERSION 3.12)\n"
@@ -106,7 +131,7 @@ QString CMakeListsBuild::buildCtxStaticLib()
   return ctx;
 }
 
-QString CMakeListsBuild::buildCtxDinamicLib()
+QString CMakeListsBuild::buildCtxDinamicLib(QJsonObject json)
 {
   QString project = config->getPrjName();
   QString header = "cmake_minimum_required(VERSION 3.12)\n"
@@ -162,12 +187,18 @@ void CMakeListsBuild::update()
 
 void CMakeListsBuild::btnClick()
 {
-  QString mode = config->getPrjMode();
-  QString file = config->getPrjPath() + "/CMakeLists.txt";
-  if (mode == "App")
-    config->writeFile(file, buildCtxApp());
-  if (mode == "StaticLib")
-    config->writeFile(file, buildCtxStaticLib());
-  if (mode == "DinamicLib")
-    config->writeFile(file, buildCtxDinamicLib());
+  QVariant data = config->getCurIndex().data();
+//  QString mode = config->getPrjMode();
+  QString file = config->getMainPrjPath1() + "/" + config->getPrjPath() + "/CMakeLists.txt";
+  if (data.canConvert<QJsonObject>())
+    {
+      QJsonObject json = qvariant_cast<QJsonObject>(data);
+      QString mode = json["mode"].toString("App");
+      if (mode == "App")
+        config->writeFile(file, buildCtxApp(json));
+      if (mode == "StaticLib")
+        config->writeFile(file, buildCtxStaticLib(json));
+      if (mode == "DinamicLib")
+        config->writeFile(file, buildCtxDinamicLib(json));
+    }
 }
