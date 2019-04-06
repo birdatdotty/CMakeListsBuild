@@ -29,8 +29,7 @@ private:
 
   // App, StaticLib, DinamicLib
   QString buildCtxApp(QJsonObject json);
-  QString buildCtxStaticLib(QJsonObject json);
-  QString buildCtxDinamicLib(QJsonObject json);
+  QString buildCtxLib(QJsonObject json);
 
 private slots:
   void update();
