@@ -22,31 +22,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+CONFIG += c++17
 
 SOURCES += \
-        main.cc \
-        MainWindow.cc \
-        Widget.cc \
-        Config.cc \
-    ConfigureCMake.cc
+        main.cc
 
-HEADERS += \
-        MainWindow.h \
-        Widget.h \
-        Config.h \
-    ConfigureCMake.h
 
-include(CMakeListsBuild/CMakeListsBuild.pri)
-include(ProBuild/ProBuild.pri)
-include(Components/Components.pri)
-include(ComponentsFiles/ComponentsFiles.pri)
-include(CheckMode/CheckMode.pri)
-include(SubPrj/SubPrj.pri)
-include(ExtendedLib/ExtendedLib.pri)
-include(PrjPath/PrjPath.pri)
-include(TreePrj/TreePrj.pri)
-include(NamePrj/NamePrj.pri)
+include(Config/Config.pri)
+include(MainWindow/MainWindow.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
